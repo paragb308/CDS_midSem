@@ -36,17 +36,10 @@ library(dummies)
 library(Metrics)
 library(kernlab)
 library(mlbench)
-
-install.packages("hydroGOF")
 library(hydroGOF)
-
-install.packages("Boruta")
 library(caret)
 library(dplyr)
 library(knitr)
 library(Boruta)
-
-install.packages("VIM")
 library(VIM)
-install.packages("mice")
 library(mice)
