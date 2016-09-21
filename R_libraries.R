@@ -43,3 +43,9 @@ library(knitr)
 library(Boruta)
 library(VIM)
 library(mice)
+
+
+library(stats) #PCA
+library(caTools) #randoms_plitting
+library(Liblinear) #lasso
+library(flexclust) #k-means clustering
