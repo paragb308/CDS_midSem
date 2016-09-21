@@ -1,0 +1,94 @@
+setwd("C:\\Users\\himanshu\\Documents\\ISISemester\\CDS\\Kaggle")
+train <- read.csv("train.csv", stringsAsFactors=FALSE)
+test <- read.csv("test.csv", stringsAsFactors=FALSE)
+attach(house)
+
+--STEP1 reformatting some Categorical variables that we can easily convert to numeric
+--Handling categorical variable
+-- Challenges -A categorical variable has too many levels.
+			  -A categorical variable has levels which rarely occur. 
+------------------------------------------------------------------------------------
+table(train$Street) 
+## Grvl Pave 
+##    6 1454
+Not exactly fancy, let’s just make that paved or not
+train$paved[train$Street == "Pave"] <- 1
+train$paved[train$Street != "Pave"] <- 0
+
+table(train$LotShape)
+## IR1 IR2 IR3 Reg 
+## 484  41  10 925
+I assume these are something like variations on “irregular”. So let’s go with regular or not
+
+train$regshape[train$LotShape == "Reg"] <- 1
+train$regshape[train$LotShape != "Reg"] <- 0
+-------------------------------------------------------------------------------------
+summarize(group_by(train, BldgType), mean(SalePrice, na.rm=T))
+
+train$twnhs_end_or_1fam[train$BldgType %in% c("1Fam", "TwnhsE")] <- 1
+train$twnhs_end_or_1fam[!train$BldgType %in% c("1Fam", "TwnhsE")] <- 0
+
+-----------------------------------------------------------------------------
+housestyle_price <- summarize(group_by(train, HouseStyle),
+          mean(SalePrice, na.rm=T))
+
+housestyle_lo <- filter(housestyle_price, housestyle_price$`mean(SalePrice, na.rm = T)` < 140000)
+housestyle_med <- filter(housestyle_price, housestyle_price$`mean(SalePrice, na.rm = T)` < 200000 &
+                          housestyle_price$`mean(SalePrice, na.rm = T)` >= 140000 )
+housestyle_hi <- filter(housestyle_price, housestyle_price$`mean(SalePrice, na.rm = T)` >= 200000)
+
+train$house_style_level[train$HouseStyle %in% housestyle_lo$HouseStyle] <- 1
+train$house_style_level[train$HouseStyle %in% housestyle_med$HouseStyle] <- 2
+train$house_style_level[train$HouseStyle %in% housestyle_hi$HouseStyle] <- 3
+-------------------------------------------------------------------------------------------------------------
+price <- summarize(group_by(train, ExterCond),
+          mean(SalePrice, na.rm=T))
+		   <fctr>                      <dbl>
+1        Ex                   201333.3
+2        Fa                   102595.1
+3        Gd                   168897.6
+4        NA                    76500.0
+5        TA                   184034.9
+
+train$exterior_cond2[train$ExterCond == "Ex"] <- 5
+train$exterior_cond2[train$ExterCond == "Gd"] <- 4
+train$exterior_cond2[train$ExterCond == "TA"] <- 3
+train$exterior_cond2[train$ExterCond == "Fa"] <- 2
+train$exterior_cond2[is.na(train$ExterCond)] <- 1
+
+---------------------------------------------------------------------------------------------------------
+--Step 2 Now, time to drop off the variables that have been made numeric and are no longer needed.
+train$Street <- NULL
+train$LotShape <- NULL
+
+--Step3.1 Find % of missing values
+----------------------------------------------------------------------------------------------------
+library(caret)
+library(dplyr)
+library(knitr)
+
+n <-dim(train)[1]
+missing.summary <- sapply(train, function(x) sum(is.na(x))) 
+indexs.missing <- sapply(train, function(x) sum(is.na(x))) > 0 
+num.variable.missing <- length(missing.summary[indexs.missing])
+
+freq.table.miss <- data.frame( Variable = names(missing.summary[indexs.missing]), Number.of.Missing = as.integer(missing.summary[indexs.missing]),Percentage = as.integer(missing.summary[indexs.missing])/as.numeric(nrow(train))*100, Percentage.of.Missing = as.numeric(prop.table(missing.summary[indexs.missing])) )
+
+freq.table.miss <- freq.table.miss %>% 
+  select(Variable:Percentage.of.Missing) %>%
+  arrange(desc(Number.of.Missing))
+kable(freq.table.miss)
+
+|Variable     | Number.of.Missing| Percentage| Percentage.of.Missing|
+|:------------|-----------------:|----------:|---------------------:|
+|PoolQC       |              1453| 99.5205479|             0.2086145|
+|MiscFeature  |              1406| 96.3013699|             0.2018665|
+|Alley        |              1369| 93.7671233|             0.1965542|
+|Fence        |              1179| 80.7534247|             0.1692749|
+|FireplaceQu  |               690| 47.2602740|             0.0990668|
+|LotFrontage  |               259| 17.7397260|             0.0371859|
+
+----------------------------------------------------------------------------------------
+
+
+
