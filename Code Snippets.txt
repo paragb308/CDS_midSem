@@ -1,7 +1,7 @@
 setwd("C:\\Users\\himanshu\\Documents\\ISISemester\\CDS\\Kaggle")
 train <- read.csv("train.csv", stringsAsFactors=FALSE)
 test <- read.csv("test.csv", stringsAsFactors=FALSE)
-attach(house)
+attach(train)
 
 --STEP1 reformatting some Categorical variables that we can easily convert to numeric
 --Handling categorical variable
@@ -56,6 +56,9 @@ train$exterior_cond2[train$ExterCond == "TA"] <- 3
 train$exterior_cond2[train$ExterCond == "Fa"] <- 2
 train$exterior_cond2[is.na(train$ExterCond)] <- 1
 
+OR
+train$heatqual <- as.integer(train$heatqual)
+
 ---------------------------------------------------------------------------------------------------------
 --Step 2 Now, time to drop off the variables that have been made numeric and are no longer needed.
 train$Street <- NULL
@@ -89,6 +92,69 @@ kable(freq.table.miss)
 |LotFrontage  |               259| 17.7397260|             0.0371859|
 
 ----------------------------------------------------------------------------------------
+# 
+for(level in unique(train$LotConfig)){
+  train[paste(colnames(train["LotConfig"]), level, sep = "_")] <- ifelse(train$LotConfig == level, 1,0)
+}
 
+
+#Step 4 Removal of variables
+features <- setdiff(names(train),c("Id","Alley","PoolQC","Fence","MiscFeature"))
+train.features <- train[features]
+train.response  <- train$SalePrice
+----------------------------------------------------------------------
+#Boruta
+library(Boruta)
+set.seed(13)
+bor.results <- Boruta(data_new,data_new$SalePrice,
+                      maxRuns=101,
+                      doTrace=0)
+bor.results$finalDecision
+-------------------------------------------------------
+
+model_output$log_prediction <- log(model_output$prediction)
+model_output$log_SalePrice <- log(model_output$SalePrice)
+
+#Test with RMSE
+install.packages("hydroGOF")
+library(hydroGOF)
+rmse(model_output$log_SalePrice,model_output$log_prediction)
+
+------------------------------------------------------------------------------------------------------------
+#Graphs & Plots
+
+plot(x = Na, y = S, pch = c(21, 3)[FuelType], col = c("red","blue")[FuelType], main = "Scatter plot of sodium against sulphur")
+lines(lowess(x = Na[FuelType == "Coal"], y = S[FuelType =="Coal"]), col = "red", lwd = 1)
+lines(lowess(x = Na[FuelType == "Oil"], y = S[FuelType =="Oil"]), col = "blue", lwd = 1)
+legend("topleft", legend = c("Coal", "Oil"), col = c("red","blue"), pch = c(21, 3))
+
+pairs(cbind(Na, Ni, S, Fe), gap = 0, panel = panel.smooth)
+pairs(cbind(Na, Ni, S, Fe), pch = c(21, 3)[FuelType],col = c("red", "blue")[FuelType], gap = 0)
+
+
+
+----------------------------------------------------------------------------------------------
+
+#Mice
+m  – Refers to 5 imputed data sets
+maxit – Refers to no. of iterations taken to impute missing values
+method – Refers to method used in imputation. we used predictive mean matching.
+
+install.packages("mice")
+library(mice)
+md.pattern(train)
+str(train)
+
+install.packages("VIM")
+library(VIM)
+mice_plot <- aggr(train, col=c('navyblue','yellow'),
+                    numbers=TRUE, sortVars=TRUE,
+                    labels=names(train), cex.axis=.7,
+                    gap=3, ylab=c("Missing data","Pattern"))
+
+imputed_Data <- mice(train, m=5, maxit = 50, method = 'pmm', seed = 500)
+summary(imputed_Data)
+
+------------------------------------------------------------------------------------
 
 
