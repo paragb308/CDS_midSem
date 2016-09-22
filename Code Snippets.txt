@@ -213,3 +213,14 @@ for(level in unique(train$CENSUS_DIVISION)){
 for(level in unique(train$URBANICITY)){
   train[paste("urban_city", level, sep = "_")] <- ifelse(train$URBANICITY == level, 1, 0)
 }
+#Handling mssing values
+train$NUM_PARKING_SPACES[train$NUM_PARKING_SPACES == "Greater than 10"] <- 2
+train$NUM_PARKING_SPACES[train$NUM_PARKING_SPACES == "0 (e.g., street parking, structure/lot more than 2 doors down, parking in back)"] <- 0
+train$NUM_PARKING_SPACES[train$NUM_PARKING_SPACES == "Between 1 and 10"] <- 1
+train$NUM_PARKING_SPACES[train$NUM_PARKING_SPACES == "Unable to determine"] <- ((2*893)+(1*193))/(893+77+193)
+train$NUM_PARKING_SPACES <- as.numeric(train$NUM_PARKING_SPACES)
+
+train$SIGNAGE_VISIBILITY_IND[train$SIGNAGE_VISIBILITY_IND == "Yes"] <- 1
+train$SIGNAGE_VISIBILITY_IND[train$SIGNAGE_VISIBILITY_IND == "No"] <- 0
+train$SIGNAGE_VISIBILITY_IND[train$SIGNAGE_VISIBILITY_IND %in% c("Unable to determine","Yes No") ] <- 42/1170
+train$SIGNAGE_VISIBILITY_IND <- as.numeric(train$SIGNAGE_VISIBILITY_IND)
