@@ -224,3 +224,34 @@ train$SIGNAGE_VISIBILITY_IND[train$SIGNAGE_VISIBILITY_IND == "Yes"] <- 1
 train$SIGNAGE_VISIBILITY_IND[train$SIGNAGE_VISIBILITY_IND == "No"] <- 0
 train$SIGNAGE_VISIBILITY_IND[train$SIGNAGE_VISIBILITY_IND %in% c("Unable to determine","Yes No") ] <- 42/1170
 train$SIGNAGE_VISIBILITY_IND <- as.numeric(train$SIGNAGE_VISIBILITY_IND)
+
+mean(train$NUM_PARKING_SPACES,is.na=FALSE)
+mean(train$SIGNAGE_VISIBILITY_IND,is.na=FALSE)
+
+
+####impute undefined values###
+train$FRONTAGE_ROAD<- as.character(train$FRONTAGE_ROAD)
+train$FRONTAGE_ROAD[train$FRONTAGE_ROAD == "Yes"] <- 1
+train$FRONTAGE_ROAD[train$FRONTAGE_ROAD == "No"] <- 0
+train$FRONTAGE_ROAD[train$FRONTAGE_ROAD == "Unable to determine"] <- NA
+train$FRONTAGE_ROAD<- as.numeric(train$FRONTAGE_ROAD)
+train$FRONTAGE_ROAD[is.na(train$FRONTAGE_ROAD)] <- mean(train$FRONTAGE_ROAD,na.rm=TRUE)
+table(train$FRONTAGE_ROAD)
+
+train$NUM_PARKING_SPACES <- as.character(train$NUM_PARKING_SPACES)
+train$NUM_PARKING_SPACES[train$NUM_PARKING_SPACES == "Greater than 10"] <- 2
+train$NUM_PARKING_SPACES[train$NUM_PARKING_SPACES == "0 (e.g., street parking, structure/lot more than 2 doors down, parking in back)"] <- 0
+train$NUM_PARKING_SPACES[train$NUM_PARKING_SPACES == "Between 1 and 10"] <- 1
+train$NUM_PARKING_SPACES[train$NUM_PARKING_SPACES == "Unable to determine"] <- NA
+train$NUM_PARKING_SPACES <- as.numeric(train$NUM_PARKING_SPACES)
+train$NUM_PARKING_SPACES[is.na(train$NUM_PARKING_SPACES)] <- mean(train$NUM_PARKING_SPACES,na.rm=TRUE)
+table(train$NUM_PARKING_SPACES)
+
+
+train$SIGNAGE_VISIBILITY_IND <- as.character(train$SIGNAGE_VISIBILITY_IND)
+train$SIGNAGE_VISIBILITY_IND[train$SIGNAGE_VISIBILITY_IND == "Yes"] <- 1
+train$SIGNAGE_VISIBILITY_IND[train$SIGNAGE_VISIBILITY_IND == "No"] <- 0
+train$SIGNAGE_VISIBILITY_IND[train$SIGNAGE_VISIBILITY_IND %in% c("Unable to determine","Yes No") ] <- NA
+train$SIGNAGE_VISIBILITY_IND <- as.numeric(train$SIGNAGE_VISIBILITY_IND)
+train$SIGNAGE_VISIBILITY_IND[is.na(train$FRONTAGE_ROAD) ] <- mean(train$FRONTAGE_ROAD,na.rm=TRUE)
+table(train$FRONTAGE_ROAD)
