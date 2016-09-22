@@ -49,3 +49,7 @@ library(stats) #PCA
 library(caTools) #randoms_plitting
 library(Liblinear) #lasso
 library(flexclust) #k-means clustering
+
+
+
+ifelse(!require("stats),install.packages(), library())
