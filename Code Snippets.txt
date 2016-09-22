@@ -199,3 +199,17 @@ train$FRONTAGE_ROAD<- as.character(train$FRONTAGE_ROAD)
 train$FRONTAGE_ROAD[train$FRONTAGE_ROAD == "Yes"] <- 1
 train$FRONTAGE_ROAD[train$FRONTAGE_ROAD == "No"] <- 0
 train$FRONTAGE_ROAD[train$FRONTAGE_ROAD == "Unable to determine"] <- 11/1170
+
+
+
+#####convert to categorical binary variables###
+for(level in unique(train$CENSUS_REGION)){
+  train[paste("Census_region", level, sep = "_")] <- ifelse(train$CENSUS_REGION == level, 1, 0)
+}
+for(level in unique(train$CENSUS_DIVISION)){
+  train[paste("Census_divison", level, sep = "_")] <- ifelse(train$CENSUS_DIVISION == level, 1, 0)
+}
+
+for(level in unique(train$URBANICITY)){
+  train[paste("urban_city", level, sep = "_")] <- ifelse(train$URBANICITY == level, 1, 0)
+}
