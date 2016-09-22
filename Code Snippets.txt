@@ -1,3 +1,15 @@
+storetrain$TOT_ATTRITION_2012[is.na(storetrain$TOT_ATTRITION_2012)] <- median(storetrain$TOT_ATTRITION_2012,na.rm=TRUE)
+storetrain$TOT_ATTRITION_2013[is.na(storetrain$TOT_ATTRITION_2013)] <- median(storetrain$TOT_ATTRITION_2013,na.rm=TRUE)
+storetrain$NUM_ASSISTANT_MANAGERS[is.na(storetrain$NUM_ASSISTANT_MANAGERS)] <- median(storetrain$NUM_ASSISTANT_MANAGERS,na.rm=TRUE)
+storetrain$NUM_CUST_ACC_REPS[is.na(storetrain$NUM_CUST_ACC_REPS)] <- median(storetrain$NUM_CUST_ACC_REPS,na.rm=TRUE)
+storetrain$NUM_STORE_MANAGERS[is.na(storetrain$NUM_STORE_MANAGERS)] <- median(storetrain$NUM_STORE_MANAGERS,na.rm=TRUE)
+storetrain$NUM_EMP_PAY_TYPE_H[is.na(storetrain$NUM_EMP_PAY_TYPE_H)] <- median(storetrain$NUM_EMP_PAY_TYPE_H,na.rm=TRUE)
+storetrain$AVG_PAY_RATE_PAY_TYPE_S[is.na(storetrain$AVG_PAY_RATE_PAY_TYPE_S)] <- median(storetrain$AVG_PAY_RATE_PAY_TYPE_S,na.rm=TRUE)
+storetrain$AVG_PAY_RATE_PAY_TYPE_H[is.na(storetrain$AVG_PAY_RATE_PAY_TYPE_H)] <- median(storetrain$AVG_PAY_RATE_PAY_TYPE_H,na.rm=TRUE)
+storetrain$SIGNAGE_VISIBILITY_IND[is.na(storetrain$SIGNAGE_VISIBILITY_IND)] <- median(storetrain$SIGNAGE_VISIBILITY_IND,na.rm=TRUE)
+
+
+
 setwd("C:\\Users\\himanshu\\Documents\\ISISemester\\CDS\\Kaggle")
 train <- read.csv("train.csv", stringsAsFactors=FALSE)
 test <- read.csv("test.csv", stringsAsFactors=FALSE)
