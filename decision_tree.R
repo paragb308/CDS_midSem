@@ -7,22 +7,24 @@ require(tree)
 tree_model <- tree(formula, data = train)
 plot(tree_model)
 text(tree_model)
-iris.tree
-summary(iris.tree)
+summary(tree_model)
+predicted <- predict(tree_model, test)
 #----------------------------------------------------------------
 library(rpart)
 library(rattle)
 library(rpart.plot)
 library(RColorBrewer)
 
-tree_model <- rpart(formula, data=train)
-fancyRpartPlot(tree_model)
+rtree_model <- rpart(formula, data=train)
+fancyRpartPlot(rtree_model)
+predicted <- predict(rtree_model, test)
 
 #----------------------------------------------------------------
 library(party)
 
 ctree_model <- tree(formula, data = train)
 plot(ctree_model)
+predicted <- predict(ctree_model, test)
 #----------------------------------------------------------------
 
 
