@@ -82,23 +82,27 @@ def kmean(noOfClusters, cutoff_distance):
     for i in range(noOfClusters):
         centroids[i] = tf_dict[centroids_ids[i]]
 
-    while(True):
+    return kmean_main(centroids, noOfClusters, cutoff_distance)
 
-        clusters = [{} for i in centroids_ids]
+
+def kmean_main(centroids, noOfClusters, cutoff_distance):
+
+    while True:
+
+        clusters = [{} for i in centroids]
 
         # Assigning points to nearest clusters
         for row_id in tf_dict.keys():
             smallest_distance = 0
             closest_cluster_index = 0
 
-            for current_cluster in range(len(centroids_ids)):
+            for current_cluster in range(len(centroids)):
                 distance = l2_distance(tf_dict[row_id], centroids[current_cluster])
                 if  current_cluster == 0 or distance < smallest_distance:
                     smallest_distance = distance
                     closest_cluster_index = current_cluster
 
             clusters[closest_cluster_index][row_id] = smallest_distance
-
 
         # Recomputing centroids of clusters
 
@@ -129,6 +133,47 @@ def compute_centroids(clusters):
 
     return new_centroids
 
+def kmean_pp(noOfClusters, cutoff_distance):
+    import random
+    initial_first_centroid = random.sample(tf_dict.keys(),1)[0]
+    initial_centroid_keys = intialize_kmeanpp(noOfClusters, initial_first_centroid)
+    centroids = [{} for i in range(noOfClusters)]
+
+    for i in range(noOfClusters):
+        centroids[i] = tf_dict[initial_centroid_keys[i]]
+
+    return kmean_main(centroids, noOfClusters, cutoff_distance)
+
+def intialize_kmeanpp(noOfClusters, initial_first_centroid):
+    import math
+    initial_centroid_keys = []
+    initial_centroid_keys.append(initial_first_centroid)
+    dist_from_defined_cluster = {}
+
+    for cluster_counter in range(1, noOfClusters): # Excluding first cluster
+
+        for point in tf_dict.keys():
+            dist_from_defined_cluster[point] = min(l2_distance(tf_dict[point], tf_dict[initial_centroid_keys[cluster_counter-1]]),
+                                                   dist_from_defined_cluster.get(point,float('inf')))
+        sum_all_dist = sum(dist_from_defined_cluster.values())
+
+        #Normalizing
+        norm_dist_from_defined_cluster ={}
+        for point, dist in dist_from_defined_cluster.items():
+            norm_dist_from_defined_cluster[point] = dist / sum_all_dist
+
+        import random
+        r = random.random()
+
+        cdf = 0
+        for point in dist_from_defined_cluster.keys():
+            cdf += norm_dist_from_defined_cluster[point]
+            if cdf > r:
+                initial_centroid_keys.append(point)
+                break
+
+    return initial_centroid_keys
+
 #---------------------------------Main Code-----------------------------------
 
 #Reading Data
@@ -152,5 +197,10 @@ compute_tfidf()
 # Get K NN for a row
 #print(getKNN('10007089', 3))
 
-print( kmean(5, 0.5))
+cluster = kmean(2, 0.5)
+for c in range(len(cluster)):
+    print(cluster[c].keys())
 
+cluster = kmean_pp(2, 0.5)
+for c in range(len(cluster)):
+    print(cluster[c].keys())
